@@ -65,7 +65,7 @@ export const getProductDetail = async (barcode: string): Promise<ProductDetail> 
   return response.json();
 };
 
-export const categories = [
+const DEFAULT_CATEGORIES = [
   { value: '', label: 'All Categories' },
   { value: 'beverages', label: 'Beverages' },
   { value: 'dairy', label: 'Dairy' },
@@ -78,3 +78,28 @@ export const categories = [
   { value: 'desserts', label: 'Desserts' },
   { value: 'sauces', label: 'Sauces' },
 ];
+
+export const fetchCategories = async (): Promise<Array<{ value: string; label: string }>> => {
+  try {
+    const response = await fetch(`${BASE_URL}/categories.json`);
+    const data = await response.json();
+
+    if (data.tags && Array.isArray(data.tags)) {
+      const fetchedCategories = data.tags
+        .slice(0, 15)
+        .map((tag: any) => ({
+          value: tag.id || tag.name,
+          label: tag.name || tag.id,
+        }));
+
+      return [{ value: '', label: 'All Categories' }, ...fetchedCategories];
+    }
+
+    return DEFAULT_CATEGORIES;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return DEFAULT_CATEGORIES;
+  }
+};
+
+export const categories = DEFAULT_CATEGORIES;

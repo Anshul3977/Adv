@@ -1,5 +1,6 @@
 import { Filter, ArrowUpDown } from 'lucide-react';
-import { categories } from '../services/api';
+import { useEffect, useState } from 'react';
+import { categories, fetchCategories } from '../services/api';
 
 interface FilterControlsProps {
   selectedCategory: string;
@@ -14,6 +15,12 @@ export default function FilterControls({
   onCategoryChange,
   onSortChange,
 }: FilterControlsProps) {
+  const [categoryList, setCategoryList] = useState(categories);
+
+  useEffect(() => {
+    fetchCategories().then(setCategoryList);
+  }, []);
+
   return (
     <div className="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row gap-4 items-stretch md:items-center">
       <div className="flex items-center gap-2 flex-1">
@@ -23,7 +30,7 @@ export default function FilterControls({
           onChange={(e) => onCategoryChange(e.target.value)}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          {categories.map((cat) => (
+          {categoryList.map((cat) => (
             <option key={cat.value} value={cat.value}>
               {cat.label}
             </option>
